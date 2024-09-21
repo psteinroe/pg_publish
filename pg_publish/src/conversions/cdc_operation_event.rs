@@ -82,7 +82,10 @@ impl CdcOperationEvent {
                 Some(t) => t,
                 None => Type::TEXT,
             };
-            values.insert(column_schema.name.to_string(), JsonConverter::from_tuple_data(&typ, &tuple_data[i])?);
+            values.insert(
+                column_schema.name.to_string(),
+                JsonConverter::from_tuple_data(&typ, &tuple_data[i])?,
+            );
         }
 
         Ok(values)

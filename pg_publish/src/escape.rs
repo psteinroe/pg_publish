@@ -42,4 +42,3 @@ pub fn quote_literal(literal: &str) -> String {
 
     quoted_literal
 }
-

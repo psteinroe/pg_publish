@@ -38,4 +38,3 @@ pub struct TableSchema {
     pub table_id: TableId,
     pub column_schemas: Vec<ColumnSchema>,
 }
-

@@ -1,8 +1,11 @@
-use std::{num::ParseIntError, str::{from_utf8, ParseBoolError, Utf8Error}};
+use std::{
+    num::ParseIntError,
+    str::{from_utf8, ParseBoolError, Utf8Error},
+};
 
 use postgres_protocol::message::backend::TupleData;
 use thiserror::Error;
-use tokio_postgres::types::Type;
+use tokio_postgres::types::{FromSql, Type};
 
 pub type JsonValue = serde_json::Value;
 
@@ -27,11 +30,13 @@ pub enum JsonValueConversionError {
 
     #[error("invalid timestamp value")]
     InvalidTimestamp(#[from] chrono::ParseError),
-
 }
 
 impl JsonConverter {
-    pub fn from_tuple_data(typ: &Type, val: &TupleData) -> Result<JsonValue, JsonValueConversionError> {
+    pub fn from_tuple_data(
+        typ: &Type,
+        val: &TupleData,
+    ) -> Result<JsonValue, JsonValueConversionError> {
         let bytes = match val {
             TupleData::Null => {
                 return Ok(JsonValue::Null);
@@ -44,10 +49,23 @@ impl JsonConverter {
         match *typ {
             Type::BOOL => {
                 let val = from_utf8(bytes)?;
-                let val: bool = val.parse()?;
-                Ok(JsonValue::Bool(val))
+                let parsed = if val == "t" {
+                    true
+                } else if val == "f" {
+                    false
+                } else {
+                    val.parse()?
+                };
+                Ok(JsonValue::Bool(parsed))
             }
-            Type::CHAR | Type::BPCHAR | Type::VARCHAR | Type::NAME | Type::TEXT | Type::TIMESTAMP => {
+            Type::CHAR
+            | Type::BPCHAR
+            | Type::VARCHAR
+            | Type::NAME
+            | Type::TEXT
+            | Type::TIMESTAMP
+            | Type::UUID
+            | Type::TIMESTAMPTZ => {
                 let val = from_utf8(bytes)?;
                 Ok(JsonValue::String(val.to_string()))
             }
@@ -60,9 +78,4 @@ impl JsonConverter {
             ref typ => Err(JsonValueConversionError::UnsupportedType(typ.to_string())),
         }
     }
-
 }
-
-
-
-

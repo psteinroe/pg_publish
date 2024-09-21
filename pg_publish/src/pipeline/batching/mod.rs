@@ -32,9 +32,6 @@ pub struct BatchConfig {
 
 impl BatchConfig {
     pub fn new(max_batch_size: usize) -> BatchConfig {
-        BatchConfig {
-            max_batch_size,
-        }
+        BatchConfig { max_batch_size }
     }
 }
-

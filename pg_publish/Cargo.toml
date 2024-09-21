@@ -24,7 +24,7 @@ tracing = { workspace = true, default-features = true }
 tokio-util = { workspace = true, features = ["rt"] }
 backon = { workspace = true  }
 futures-util = "0.3.30"
-
+reqwest = { workspace = true }
 slatedb = { workspace = true  }
 
 [dev-dependencies]

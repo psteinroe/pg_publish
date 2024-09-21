@@ -4,7 +4,6 @@ use clap::{Args, Parser, Subcommand};
 use pg_publish::pipeline::{
     data_pipeline::DataPipeline,
     destinations::stdout::StdoutDestination,
-    publisher::Publisher,
     sources::postgres::{PostgresSource, TableNamesFrom},
     stores::memory::MemoryStore,
 };
@@ -105,9 +104,7 @@ async fn main_impl() -> Result<(), Box<dyn Error>> {
     let store = MemoryStore::default();
     let destination = StdoutDestination;
 
-    let publisher = Publisher::new(destination, store).await;
-
-    let mut pipeline = DataPipeline::new(postgres_source, publisher);
+    let mut pipeline = DataPipeline::new(postgres_source, destination, store).await?;
 
     pipeline.run().await?;
 

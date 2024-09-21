@@ -6,11 +6,11 @@ use tokio_postgres::types::PgLsn;
 
 use crate::conversions::cdc_operation_event::CdcOperationEventConversionError;
 
-pub mod destinations;
-pub mod data_pipeline;
-pub mod sources;
 pub mod batching;
+pub mod data_pipeline;
+pub mod destinations;
 pub mod publisher;
+pub mod sources;
 pub mod stores;
 
 #[derive(Debug, Error)]
@@ -36,5 +36,3 @@ pub enum PipelineError {
     #[error("io error: {0}")]
     IOError(#[from] std::io::Error),
 }
-
-

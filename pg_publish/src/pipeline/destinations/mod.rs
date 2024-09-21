@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::conversions::cdc_operation_event::CdcOperationEvent;
 
 #[derive(Debug, Error)]
-pub enum DestinationError { }
+pub enum DestinationError {}
 
 #[async_trait]
 pub trait Destination: Send + Sync {
@@ -14,7 +14,3 @@ pub trait Destination: Send + Sync {
 
     fn max_batch_size(&self) -> usize;
 }
-
-
-
-

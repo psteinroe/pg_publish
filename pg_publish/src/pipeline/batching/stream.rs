@@ -1,8 +1,8 @@
+use core::pin::Pin;
+use core::task::{Context, Poll};
 use futures::Stream;
 use pin_project_lite::pin_project;
 use tracing::info;
-use core::pin::Pin;
-use core::task::{Context, Poll};
 
 use super::{BatchBoundary, BatchConfig};
 
@@ -25,12 +25,12 @@ pin_project! {
 }
 
 impl<B: BatchBoundary, S: Stream<Item = B>> TransactionBatchStream<B, S> {
-    pub fn new(stream: S, batch_config: BatchConfig ) -> Self {
+    pub fn new(stream: S, batch_config: BatchConfig) -> Self {
         TransactionBatchStream {
             stream,
             items: Vec::with_capacity(batch_config.max_batch_size),
             inner_stream_ended: false,
-            batch_config
+            batch_config,
         }
     }
 
@@ -58,7 +58,10 @@ impl<B: BatchBoundary, S: Stream<Item = B>> Stream for TransactionBatchStream<B,
                 Poll::Ready(Some(item)) => {
                     let is_last_in_batch = item.is_last_in_batch();
                     this.items.push(item);
-                    if is_last_in_batch || this.items.iter().filter(|i| i.is_batch_relevant()).count() >= this.batch_config.max_batch_size {
+                    if is_last_in_batch
+                        || this.items.iter().filter(|i| i.is_batch_relevant()).count()
+                            >= this.batch_config.max_batch_size
+                    {
                         return Poll::Ready(Some(std::mem::take(this.items)));
                     }
                 }
@@ -86,4 +89,3 @@ impl<B: BatchBoundary, S: Stream<Item = B>> Stream for TransactionBatchStream<B,
         Poll::Pending
     }
 }
-

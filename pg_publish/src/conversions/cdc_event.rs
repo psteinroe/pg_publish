@@ -1,5 +1,6 @@
 use postgres_protocol::message::backend::{
-    BeginBody, CommitBody, DeleteBody, InsertBody, LogicalReplicationMessage, RelationBody, ReplicationMessage, TypeBody, UpdateBody
+    BeginBody, CommitBody, DeleteBody, InsertBody, LogicalReplicationMessage, RelationBody,
+    ReplicationMessage, TypeBody, UpdateBody,
 };
 use thiserror::Error;
 use tracing::info;
@@ -14,7 +15,6 @@ pub enum CdcEventConversionError {
     #[error("unknown replication message")]
     UnknownReplicationMessage,
 }
-
 
 #[derive(Debug)]
 pub enum CdcEvent {
@@ -49,7 +49,9 @@ impl BatchBoundary for CdcEvent {
 impl TryFrom<ReplicationMessage<LogicalReplicationMessage>> for CdcEvent {
     type Error = CdcEventConversionError;
 
-    fn try_from(value: ReplicationMessage<LogicalReplicationMessage>) -> Result<CdcEvent, CdcEventConversionError> {
+    fn try_from(
+        value: ReplicationMessage<LogicalReplicationMessage>,
+    ) -> Result<CdcEvent, CdcEventConversionError> {
         match value {
             ReplicationMessage::XLogData(xlog_data) => match xlog_data.into_data() {
                 LogicalReplicationMessage::Begin(begin_body) => Ok(CdcEvent::Begin(begin_body)),
@@ -60,19 +62,13 @@ impl TryFrom<ReplicationMessage<LogicalReplicationMessage>> for CdcEvent {
                 LogicalReplicationMessage::Relation(relation_body) => {
                     Ok(CdcEvent::Relation(relation_body))
                 }
-                LogicalReplicationMessage::Type(type_body) => {
-                    Ok(CdcEvent::Type(type_body))
-                }
+                LogicalReplicationMessage::Type(type_body) => Ok(CdcEvent::Type(type_body)),
                 LogicalReplicationMessage::Insert(insert_body) => {
                     info!("insert proto: {:?}", insert_body.tuple().tuple_data());
                     Ok(CdcEvent::Insert(insert_body))
                 }
-                LogicalReplicationMessage::Update(update_body) => {
-                    Ok(CdcEvent::Update(update_body))
-                }
-                LogicalReplicationMessage::Delete(delete_body) => {
-                    Ok(CdcEvent::Delete(delete_body))
-                }
+                LogicalReplicationMessage::Update(update_body) => Ok(CdcEvent::Update(update_body)),
+                LogicalReplicationMessage::Delete(delete_body) => Ok(CdcEvent::Delete(delete_body)),
                 LogicalReplicationMessage::Truncate(_) => {
                     Err(CdcEventConversionError::MessageNotSupported)
                 }

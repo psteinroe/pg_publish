@@ -1,10 +1,12 @@
 use async_trait::async_trait;
-use postgres::{stream::{CdcStream, CdcStreamError, StatusUpdateError}, PostgresSourceError};
+use postgres::{
+    stream::{CdcStream, CdcStreamError, StatusUpdateError},
+    PostgresSourceError,
+};
 use thiserror::Error;
 use tokio_postgres::types::PgLsn;
 
 use crate::table::{TableId, TableSchema};
-
 
 pub mod postgres;
 
@@ -28,5 +30,3 @@ pub trait Source {
 
     async fn get_cdc_stream(&self, start_lsn: PgLsn) -> Result<CdcStream, SourceError>;
 }
-
-
