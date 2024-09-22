@@ -1,6 +1,6 @@
 ## About `pg_publish`
 
-`pg_publish` is a highly experimental Rust crate to quickly forward the Postgres replication stream to a queue to run side-effects. It has build during the Supabase Launch Week XI Hackathon to learn about the Postgres Replication Protocol and gain more hands-on experience with async Rust.
+`pg_publish` is a highly experimental Rust crate to quickly forward the Postgres replication stream to a queue to run side-effects. It has build during the Supabase Launch Week 12 Hackathon to learn about the Postgres Replication Protocol and gain more hands-on experience with async Rust.
 
 Goals:
 - at least once-delivery of replication data to designated endpoint
