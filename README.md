@@ -5,7 +5,7 @@
 Goals:
 - at least once-delivery of replication data to designated endpoint
 - automatically handle schema changes (start once, run forever)
-- never crash (todo :D)
+- never crash (very much todo)
 - later: fan-out to different queues with filters on event data
 - later: consistent message ordering per queue
 
